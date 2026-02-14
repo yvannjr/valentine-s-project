@@ -26,7 +26,6 @@
             width: 350px;
             z-index: 10;
             border: 2px solid #ff4b5c;
-            position: relative;
         }
 
         h1 { color: #d63384; font-size: 1.5rem; }
@@ -42,13 +41,14 @@
             outline: none;
         }
 
+        /* Conteneur des boutons pour l'alignement */
         .buttons { 
             margin-top: 20px; 
-            height: 80px; 
+            height: 60px; 
             display: flex; 
             justify-content: center; 
             align-items: center;
-            gap: 20px;
+            gap: 20px; /* Espace entre OUI et NON */
         }
 
         button {
@@ -58,16 +58,16 @@
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s ease;
+            transition: transform 0.2s;
         }
 
-        #next, #yes { background: #ff4b5c; color: white; z-index: 11; }
+        #next, #yes { background: #ff4b5c; color: white; position: relative; }
         
-        /* C'est ici que la fuite se joue */
+        /* Au début, le bouton Non est normal, à côté du Oui */
         #no { 
             background: #6c757d; 
             color: white; 
-            position: absolute; /* Indispensable pour qu'il puisse bouger partout */
+            position: relative; 
             z-index: 12;
         }
 
@@ -110,13 +110,13 @@
     <h1>Coucou ! C'est quoi ton nom ? ✨</h1>
     <input type="text" id="userName" placeholder="Ton nom ici...">
     <div class="buttons">
-        <button id="next">Suivant ❤️</button>
+        <button id="next">Continuer ❤️</button>
     </div>
 </div>
 
 <div class="container" id="step-2" style="display: none;">
     <h1 id="ask-text"></h1>
-    <div class="buttons" id="area">
+    <div class="buttons">
         <button id="yes">OUI ! 😍</button>
         <button id="no">Non 🙈</button>
     </div>
@@ -142,21 +142,18 @@
         document.getElementById("ask-text").innerText = name + ", veux-tu être ma Valentine ?";
     });
 
-    // FONCTION DE FUITE DU BOUTON NON
     const moveButton = () => {
-        // On calcule des positions aléatoires sur toute la largeur/hauteur de l'écran
+        // Dès qu'on survole le bouton, il passe en "fixed" pour s'enfuir partout sur l'écran
+        noBtn.style.position = "fixed"; 
         const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
         const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-        
         noBtn.style.left = `${x}px`;
         noBtn.style.top = `${y}px`;
     };
 
-    // Le bouton fuit dès qu'on le survole OU qu'on essaie de cliquer
     noBtn.addEventListener("mouseover", moveButton);
     noBtn.addEventListener("click", moveButton);
 
-    // ACTION FINALE
     yesBtn.addEventListener("click", () => {
         document.getElementById("step-2").style.display = "none";
         document.getElementById("final-screen").style.display = "block";

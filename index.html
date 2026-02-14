@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Valentine 💘</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            background: radial-gradient(circle, #ffcad4, #f4bbbb);
+            overflow: hidden;
+            transition: background 1s;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(255, 75, 92, 0.2);
+            width: 350px;
+            z-index: 10;
+            border: 2px solid #ff4b5c;
+            position: relative;
+        }
+
+        h1 { color: #d63384; font-size: 1.5rem; }
+
+        input {
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #ffcad4;
+            width: 80%;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .buttons { 
+            margin-top: 20px; 
+            height: 80px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        #next, #yes { background: #ff4b5c; color: white; z-index: 11; }
+        
+        /* C'est ici que la fuite se joue */
+        #no { 
+            background: #6c757d; 
+            color: white; 
+            position: absolute; /* Indispensable pour qu'il puisse bouger partout */
+            z-index: 12;
+        }
+
+        .petale {
+            position: fixed;
+            top: -10%;
+            z-index: 5;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        #final-screen {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+        }
+
+        .jump {
+            animation: jump 0.8s infinite alternate;
+            width: 250px;
+        }
+
+        @keyframes jump {
+            from { transform: translateY(0); }
+            to { transform: translateY(-40px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="step-1">
+    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" width="100">
+    <h1>Coucou ! C'est quoi ton nom ? ✨</h1>
+    <input type="text" id="userName" placeholder="Ton nom ici...">
+    <div class="buttons">
+        <button id="next">Suivant ❤️</button>
+    </div>
+</div>
+
+<div class="container" id="step-2" style="display: none;">
+    <h1 id="ask-text"></h1>
+    <div class="buttons" id="area">
+        <button id="yes">OUI ! 😍</button>
+        <button id="no">Non 🙈</button>
+    </div>
+</div>
+
+<div id="final-screen">
+    <img class="jump" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/MDJ9IbZYpHTvW/giphy.gif">
+    <h1 id="final-msg" style="color: white; text-shadow: 3px 3px #ff2e63; font-size: 2.5rem;"></h1>
+</div>
+
+<script>
+    const nextBtn = document.getElementById("next");
+    const yesBtn = document.getElementById("yes");
+    const noBtn = document.getElementById("no");
+    const nameInput = document.getElementById("userName");
+    let name = "";
+
+    nextBtn.addEventListener("click", () => {
+        name = nameInput.value.trim();
+        if (name === "") return alert("Donne-moi ton nom ! 😊");
+        document.getElementById("step-1").style.display = "none";
+        document.getElementById("step-2").style.display = "block";
+        document.getElementById("ask-text").innerText = name + ", veux-tu être ma Valentine ?";
+    });
+
+    // FONCTION DE FUITE DU BOUTON NON
+    const moveButton = () => {
+        // On calcule des positions aléatoires sur toute la largeur/hauteur de l'écran
+        const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+        const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+        
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+    };
+
+    // Le bouton fuit dès qu'on le survole OU qu'on essaie de cliquer
+    noBtn.addEventListener("mouseover", moveButton);
+    noBtn.addEventListener("click", moveButton);
+
+    // ACTION FINALE
+    yesBtn.addEventListener("click", () => {
+        document.getElementById("step-2").style.display = "none";
+        document.getElementById("final-screen").style.display = "block";
+        document.getElementById("final-msg").innerText = "JE T'AIME " + name.toUpperCase() + " ! 🌸🧸💖";
+        document.body.style.background = "#ff2e63";
+        setInterval(createPetale, 150);
+    });
+
+    function createPetale() {
+        const p = document.createElement("div");
+        p.classList.add("petale");
+        p.innerHTML = Math.random() > 0.5 ? "🌸" : "❤️"; 
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.fontSize = (Math.random() * 20 + 20) + "px";
+        p.style.animationDuration = (Math.random() * 2 + 3) + "s";
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 5000);
+    }
+</script>
+
+</body>
+</html>
